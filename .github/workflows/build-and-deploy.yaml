@@ -55,7 +55,7 @@ jobs:
           ./package.sh
 
       - name: Upload build flink dir to s3 bucket
-        working-directory: image-building-target
+        working-directory: connector-packager/image-building-target
         run: |
           target_path=${TARGET_BUCKET}/packaged-connectors/${VERSION}/$(date +%Y%m%d%H%M%S)
           echo "Uploading ./ dir to ${target_path}..."
