@@ -1,0 +1,6 @@
+connector:
+  type: kinesis
+  packaged: true
+  source: true
+  sink: true
+  lookup: true

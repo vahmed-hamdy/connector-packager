@@ -1,0 +1,68 @@
+name: 'Build VVR Flink Connectors'
+
+on:
+  workflow_dispatch:
+    inputs:
+      vvr_version:
+        description: 'The VVR version to build (e.g. "1.15-vvr-6.0.6").'
+        required: true
+
+jobs:
+  build:
+    name: 'Build version ${{ github.event.inputs.vvr_version }}'
+    runs-on: ubuntu-22.04
+    environment: AWS Env
+
+    permissions: # required for using the Github OIDC Provider with AWS IAM
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout connector-packager
+        uses: actions/checkout@v3
+        with:
+          path: connector-packager
+
+      - name: Set up Java Environment
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
+      - name: Set up Maven
+        uses: stCarolas/setup-maven@v4.5
+        with:
+          maven-version: 3.2.5
+
+      - name: Cache local Maven repository
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+
+      - name: Maven Build Connectors
+        working-directory: connector-packager
+        run: |
+          chmod 755 package.sh
+          ./package.sh
+
+      - name: package
+        working-directory: connector-packager
+        run: |
+          chmod 755 package.sh
+          ./package.sh
+
+      - name: Upload build flink dir to s3 bucket
+        working-directory: image-building-target
+        run: |
+          target_path=${TARGET_BUCKET}/packaged-connectors/${VERSION}/$(date +%Y%m%d%H%M%S)
+          echo "Uploading ./ dir to ${target_path}..."
+          aws s3 cp ./ ${target_path} --recursive
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: eu-central-1
+          TARGET_BUCKET: 's3://test-bucket-vahmed/'
+          VERSION: ${{ github.event.inputs.vvr_version }}
