@@ -1,6 +1,6 @@
 connector:
-  type: kinesis
+  type: dynamodb
   packaged: true
-  source: true
+  source: false
   sink: true
   lookup: false
