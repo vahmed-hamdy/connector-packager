@@ -5,10 +5,11 @@ on:
     inputs:
       repoTag:
         description: 'Repo of submit'
-        required: true
+        required: false
+        default: "today"
 jobs:
-  build:
-    name: 'Build version ${{ github.event.inputs.vvr_version }}'
+  build-and-publish-image:
+    name: 'Build connectors and publish image'
     runs-on: ubuntu-22.04
     environment: AWS Env
     permissions: # required for using the Github OIDC Provider with AWS IAM
@@ -16,10 +17,10 @@ jobs:
       contents: read
 
     steps:
-      - name: Checkout connector-packager
+      - name: Checkout spiVersionLogger
         uses: actions/checkout@v3
         with:
-          path: connector-packager
+          path: connector-packager/spiVersionLogger
 
       - name: Set up Java Environment
         uses: actions/setup-java@v3
@@ -54,8 +55,10 @@ jobs:
       - name: Maven Build Connectors
         working-directory: spiVersionLogger
         run: |
+          echo $(pwd)
           chmod 755 build-and-deploy.sh
           ./build-and-deploy.sh $ECR_REPO:$VERSION
+          docker push $ECR_REPO:$VERSION
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
