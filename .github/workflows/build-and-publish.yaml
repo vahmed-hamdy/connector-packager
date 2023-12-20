@@ -55,10 +55,9 @@ jobs:
       - name: Maven Build Connectors
         working-directory: connector-packager/spiVersionLogger
         run: |
-          echo $(ls)
-#          chmod 755 build-and-deploy.sh
-#          ./build-and-deploy.sh $ECR_REPO:$VERSION
-#          docker push $ECR_REPO:$VERSION
+          chmod 755 build-and-deploy.sh
+          ./build-and-deploy.sh $ECR_REPO:$VERSION
+          docker push $ECR_REPO:$VERSION
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
