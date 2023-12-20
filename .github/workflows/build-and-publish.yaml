@@ -1,18 +1,16 @@
-name: 'Build, Package and Dist connectors'
+name: 'Build, Package and Dist image'
 
 on:
   workflow_dispatch:
     inputs:
-      vvr_version:
-        description: 'Image to distribute For.'
+      repoTag:
+        description: 'Repo of submit'
         required: true
-
 jobs:
   build:
     name: 'Build version ${{ github.event.inputs.vvr_version }}'
     runs-on: ubuntu-22.04
     environment: AWS Env
-
     permissions: # required for using the Github OIDC Provider with AWS IAM
       id-token: write
       contents: read
@@ -41,28 +39,28 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
+            
 
-      - name: Maven Build Connectors
-        working-directory: connector-packager
+      - name: Log in to ECR
+        working-directory: connector-packager/spiVersionLogger
         run: |
-          chmod 755 package.sh
-          ./package.sh
-
-      - name: package
-        working-directory: connector-packager
-        run: |
-          chmod 755 package.sh
-          ./package.sh
-
-      - name: Upload build flink dir to s3 bucket
-        working-directory: connector-packager/image-building-target
-        run: |
-          target_path=${TARGET_BUCKET}/packaged-connectors/${VERSION}/$(date +%Y%m%d%H%M%S)
-          echo "Uploading ./ dir to ${target_path}..."
-          aws s3 cp ./ ${target_path} --recursive
+          aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin $ECR_REPO
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: eu-central-1
-          TARGET_BUCKET: 's3://test-bucket-vahmed'
-          VERSION: ${{ github.event.inputs.vvr_version }}
+          ECR_REPO: '423583746720.dkr.ecr.eu-central-1.amazonaws.com/test-ecr'
+          VERSION: ${{ github.event.inputs.repoTag }}
+
+      - name: Maven Build Connectors
+        working-directory: connector-packager/spiVersionLogger
+        run: |
+          chmod 755 package.sh
+          ./build-and-deploy.sh $ECR_REPO:$VERSION
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: eu-central-1
+          ECR_REPO: '423583746720.dkr.ecr.eu-central-1.amazonaws.com/test-ecr'
+          VERSION: ${{ github.event.inputs.repoTag }}
+
