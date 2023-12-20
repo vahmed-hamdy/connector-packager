@@ -20,7 +20,7 @@ jobs:
       - name: Checkout spiVersionLogger
         uses: actions/checkout@v3
         with:
-          path: connector-packager/spiVersionLogger
+          path: connector-packager
 
       - name: Set up Java Environment
         uses: actions/setup-java@v3

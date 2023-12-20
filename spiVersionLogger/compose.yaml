@@ -1,0 +1,13 @@
+services:
+  version-logger:
+    build: .
+    image: "versionlogger:latest"
+    networks:
+      - my-shared-network
+    ports:
+      - "8090:8090"
+
+
+networks:
+  my-shared-network:
+    driver: bridge
