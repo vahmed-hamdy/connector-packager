@@ -17,6 +17,6 @@ for module_path in connector-*; do
     identifier=$(getIdentifierInMetaFilename "$meta_filename")
     mkdir -p  "$CONNECTORS_TARGET"/"$identifier"
 
-    cp "$module_path"/target/connector*.jar "$CONNECTORS_TARGET"/"$identifier"
+    cp "$module_path"/target/flink-sql*.jar "$CONNECTORS_TARGET"/"$identifier"
     cp "$module_path"/"$meta_filepath" "$CONNECTORS_TARGET"/"$identifier"
 done

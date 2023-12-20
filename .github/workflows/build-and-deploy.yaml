@@ -1,4 +1,4 @@
-name: 'Build VVR Flink Connectors'
+name: 'Build, Package and Dist'
 
 on:
   workflow_dispatch:

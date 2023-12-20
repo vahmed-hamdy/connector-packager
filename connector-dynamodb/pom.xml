@@ -27,41 +27,41 @@
     </properties>
     <build>
         <plugins>
-            <!--            <plugin>-->
-            <!--                <artifactId>maven-dependency-plugin</artifactId>-->
-            <!--                <executions>-->
-            <!--                    <execution>-->
-            <!--                        <phase>package</phase>-->
-            <!--                        <goals>-->
-            <!--                            <goal>copy-dependencies</goal>-->
-            <!--                        </goals>-->
-            <!--                        <configuration>-->
-            <!--                            <outputDirectory>${project.build.directory}</outputDirectory>-->
-            <!--                        </configuration>-->
-            <!--                    </execution>-->
-            <!--                </executions>-->
-            <!--            </plugin>-->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
+                <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>shade-flink</id>
                         <phase>package</phase>
                         <goals>
-                            <goal>shade</goal>
+                            <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
-                            <shadeTestJar>false</shadeTestJar>
-                            <artifactSet combine.self="override">
-                                <includes>
-                                    <include>*:*</include>
-                                </includes>
-                            </artifactSet>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
             </plugin>
+<!--            <plugin>-->
+<!--                <groupId>org.apache.maven.plugins</groupId>-->
+<!--                <artifactId>maven-shade-plugin</artifactId>-->
+<!--                <executions>-->
+<!--                    <execution>-->
+<!--                        <id>shade-flink</id>-->
+<!--                        <phase>package</phase>-->
+<!--                        <goals>-->
+<!--                            <goal>shade</goal>-->
+<!--                        </goals>-->
+<!--                        <configuration>-->
+<!--                            <shadeTestJar>false</shadeTestJar>-->
+<!--                            <artifactSet combine.self="override">-->
+<!--                                <includes>-->
+<!--                                    <include>*:*</include>-->
+<!--                                </includes>-->
+<!--                            </artifactSet>-->
+<!--                        </configuration>-->
+<!--                    </execution>-->
+<!--                </executions>-->
+<!--            </plugin>-->
         </plugins>
     </build>
 
