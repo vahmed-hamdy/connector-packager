@@ -42,7 +42,6 @@ jobs:
             
 
       - name: Log in to ECR
-        working-directory: connector-packager/spiVersionLogger
         run: |
           aws ecr get-login-password --region eu-central-1 | docker login --username AWS --password-stdin $ECR_REPO
         env:
@@ -53,9 +52,9 @@ jobs:
           VERSION: ${{ github.event.inputs.repoTag }}
 
       - name: Maven Build Connectors
-        working-directory: connector-packager/spiVersionLogger
+        working-directory: spiVersionLogger
         run: |
-          chmod 755 package.sh
+          chmod 755 build-and-deploy.sh
           ./build-and-deploy.sh $ECR_REPO:$VERSION
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
